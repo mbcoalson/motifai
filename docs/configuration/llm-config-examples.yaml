@@ -1,0 +1,361 @@
+# LLM Configuration Examples
+# Copy and customize these templates for your voice validation setup
+
+# =============================================================================
+# BASIC CONFIGURATION
+# =============================================================================
+
+# Simple config for getting started
+basic:
+  default_model: "claude-sonnet-4.5"
+  anthropic_api_key: "${ANTHROPIC_API_KEY}"
+  timeout_seconds: 60
+
+# =============================================================================
+# TIERED VALIDATION CONFIGURATION
+# =============================================================================
+
+# Three validation tiers with different speed/accuracy/cost tradeoffs
+tiered_validation:
+  validation_tiers:
+    fast:
+      model: "qwen2.5-72b-ollama"
+      timeout_seconds: 30
+      cost_per_validation: 0.00
+      description: "Quick checks during writing"
+
+    focused:
+      model: "claude-sonnet-4.5"
+      timeout_seconds: 60
+      cost_per_validation: 0.012
+      description: "Production validations, balanced accuracy"
+
+    comprehensive:
+      model: "claude-opus-4.5"
+      timeout_seconds: 120
+      cost_per_validation: 0.060
+      max_output_tokens: 500
+      description: "Final review, highest accuracy"
+
+# =============================================================================
+# MULTI-PROVIDER CONFIGURATION
+# =============================================================================
+
+# Support multiple LLM providers (Claude, Ollama, OpenAI)
+multi_provider:
+  llm_providers:
+    claude:
+      api_key: "${ANTHROPIC_API_KEY}"
+      base_url: "https://api.anthropic.com"
+      default_model: "claude-sonnet-4.5"
+      timeout_seconds: 60
+      max_retries: 3
+
+    ollama:
+      base_url: "http://localhost:11434"
+      default_model: "qwen2.5:72b"
+      timeout_seconds: 30
+      max_retries: 1
+
+    openai:
+      api_key: "${OPENAI_API_KEY}"
+      base_url: "https://api.openai.com/v1"
+      default_model: "gpt-4-turbo"
+      timeout_seconds: 60
+      max_retries: 3
+
+  # Model routing (which provider for which tier)
+  model_routing:
+    fast: "ollama"
+    focused: "claude"
+    comprehensive: "claude"
+
+# =============================================================================
+# DEVELOPMENT vs PRODUCTION
+# =============================================================================
+
+# Different configs for dev and prod environments
+environment_specific:
+  development:
+    model: "qwen2.5-72b-ollama"
+    timeout_seconds: 30
+    cost_tracking:
+      enabled: false
+    caching:
+      enabled: true
+      ttl_seconds: 3600
+    logging:
+      level: "DEBUG"
+
+  production:
+    model: "claude-sonnet-4.5"
+    fallback_model: "qwen2.5-72b-ollama"
+    timeout_seconds: 60
+    max_retries: 3
+    cost_tracking:
+      enabled: true
+      alert_threshold: 10.00
+      log_file: "logs/api_costs.json"
+    caching:
+      enabled: true
+      ttl_seconds: 86400  # 24 hours
+    logging:
+      level: "INFO"
+      file: "logs/waterrising.log"
+
+# =============================================================================
+# PRIVACY-FIRST (LOCAL ONLY)
+# =============================================================================
+
+# All local models, no cloud APIs, complete privacy
+privacy_first:
+  model: "qwen2.5-72b-ollama"
+  fallback_model: "llama3.1-70b-ollama"
+
+  ollama:
+    base_url: "http://localhost:11434"
+    models:
+      - "qwen2.5:72b"
+      - "llama3.1:70b"
+
+  # Explicitly disable cloud providers
+  cloud_providers_enabled: false
+
+  # No network calls
+  offline_mode: true
+
+# =============================================================================
+# COST-OPTIMIZED
+# =============================================================================
+
+# Minimize costs while maintaining reasonable quality
+cost_optimized:
+  # Use free local model by default
+  default_model: "qwen2.5-72b-ollama"
+
+  # Only use cloud for final validation
+  validation_workflow:
+    draft: "qwen2.5-72b-ollama"
+    revision: "qwen2.5-72b-ollama"
+    final: "claude-sonnet-4.5"
+
+  # Strict cost controls
+  cost_tracking:
+    enabled: true
+    alert_threshold: 5.00
+    monthly_budget: 10.00
+    auto_disable_on_budget_exceeded: true
+
+  # Aggressive caching
+  caching:
+    enabled: true
+    ttl_seconds: 604800  # 1 week
+
+  # Batch validations to reduce overhead
+  batching:
+    enabled: true
+    max_batch_size: 10
+
+# =============================================================================
+# QUALITY-FIRST (ACCURACY PRIORITIZED)
+# =============================================================================
+
+# Maximum accuracy, cost is secondary
+quality_first:
+  # Use best model by default
+  default_model: "claude-opus-4.5"
+
+  # Longer timeouts for better responses
+  timeout_seconds: 120
+
+  # More output for detailed explanations
+  max_output_tokens: 1000
+
+  # No fallback (fail if premium model unavailable)
+  fallback_model: null
+
+  # Disable caching (always fresh validation)
+  caching:
+    enabled: false
+
+  # Detailed logging
+  logging:
+    level: "DEBUG"
+    log_llm_requests: true
+    log_llm_responses: true
+
+# =============================================================================
+# TEAM COLLABORATION
+# =============================================================================
+
+# Shared config for team environment
+team_collaboration:
+  # Shared model for consistency
+  default_model: "claude-sonnet-4.5"
+
+  # Team API key (from shared secrets)
+  anthropic_api_key: "${TEAM_ANTHROPIC_API_KEY}"
+
+  # Cost tracking per user
+  cost_tracking:
+    enabled: true
+    user_id: "${WATERRISING_USER_ID}"
+    team_budget: 100.00
+    alert_threshold: 80.00
+
+  # Shared character profiles
+  character_profiles_path: "shared/character_profiles/"
+
+  # Centralized results
+  results_output_dir: "shared/validation_results/"
+
+  # Team-wide caching
+  caching:
+    enabled: true
+    shared_cache: true
+    cache_dir: "shared/cache/"
+
+# =============================================================================
+# HIGH-VOLUME WORKFLOW
+# =============================================================================
+
+# Optimized for frequent validations (100+ per day)
+high_volume:
+  # Tiered approach to manage costs
+  validation_tiers:
+    quick_check:
+      model: "qwen2.5-72b-ollama"
+      timeout_seconds: 15
+      max_output_tokens: 200
+
+    standard:
+      model: "claude-sonnet-4.5"
+      timeout_seconds: 60
+      max_output_tokens: 300
+
+    deep_dive:
+      model: "claude-opus-4.5"
+      timeout_seconds: 120
+      max_output_tokens: 500
+
+  # Parallel processing
+  parallel:
+    enabled: true
+    max_workers: 10
+    max_concurrent_api_requests: 5
+
+  # Aggressive caching
+  caching:
+    enabled: true
+    ttl_seconds: 86400
+
+  # Cost controls
+  cost_tracking:
+    enabled: true
+    monthly_budget: 100.00
+    alert_thresholds: [25.00, 50.00, 75.00, 90.00]
+
+# =============================================================================
+# CUSTOM PROMPTS
+# =============================================================================
+
+# Advanced: customize validation prompts
+custom_prompts:
+  model: "claude-sonnet-4.5"
+
+  prompts:
+    voice_validation: |
+      You are an expert character voice analyst for the novel "Water Rising".
+
+      CHARACTER: {character_name}
+      ARC STAGE: {arc_stage}
+
+      CHARACTER VOICE PROFILE:
+      {character_profile}
+
+      TASK: Analyze the following excerpt for voice consistency.
+
+      EXCERPT:
+      {excerpt}
+
+      PROVIDE:
+      1. Is the voice consistent with this character at this arc stage?
+      2. If not, what specific words/phrases are problematic?
+      3. What would be a more appropriate phrasing?
+
+    edge_case_analysis: |
+      This excerpt has been flagged for potential voice inconsistency.
+      However, it may be an intentional edge case (mimicry, sarcasm, code-switching).
+
+      EXCERPT:
+      {excerpt}
+
+      CONTEXT:
+      {context}
+
+      Is this a valid edge case or a genuine voice violation?
+
+# =============================================================================
+# BENCHMARK / TESTING
+# =============================================================================
+
+# Configuration for running model benchmarks
+benchmark_testing:
+  # Models to compare
+  models_to_test:
+    - "qwen2.5-72b-ollama"
+    - "claude-sonnet-4.5"
+    - "claude-opus-4.5"
+    - "gpt-4-turbo"
+
+  # Test scenarios
+  benchmark_scenarios: "docs/model-testing/benchmark-scenarios.yaml"
+
+  # Output
+  results_output: "results/benchmark_report.md"
+
+  # Cost tracking
+  cost_tracking:
+    enabled: true
+    log_file: "results/benchmark_costs.json"
+
+  # Parallel execution
+  parallel:
+    enabled: true
+    max_workers: 4
+
+# =============================================================================
+# SAAS DEPLOYMENT
+# =============================================================================
+
+# Configuration for SaaS deployment (multi-tenant)
+saas_deployment:
+  # Tier-based model routing
+  tier_routing:
+    free: "qwen2.5-72b-ollama"
+    standard: "claude-sonnet-4.5"
+    professional: "claude-opus-4.5"
+    enterprise: "${CUSTOMER_MODEL}"  # Custom per customer
+
+  # Rate limiting
+  rate_limiting:
+    free: "10/month"
+    standard: "100/month"
+    professional: "500/month"
+    enterprise: "unlimited"
+
+  # Cost tracking per tenant
+  cost_tracking:
+    enabled: true
+    tenant_id: "${TENANT_ID}"
+    billing_enabled: true
+
+  # Multi-region support
+  regions:
+    us_east:
+      anthropic_api_url: "https://api.anthropic.com"
+      ollama_url: "http://ollama-us-east.internal:11434"
+
+    eu_west:
+      anthropic_api_url: "https://api.anthropic.com"
+      ollama_url: "http://ollama-eu-west.internal:11434"

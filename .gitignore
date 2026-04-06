@@ -1,0 +1,69 @@
+# Python
+.venv/
+.env
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Personal novel content & data
+data/
+.cache/
+config/stories/
+skills/voice/
+skills/rollouts/
+
+# FAISS index files
+chapters.index
+
+# Legacy test scripts with hardcoded personal paths (kept local only)
+/tests/*.py
+!/tests/__init__.py
+# Modern pytest suite under tests/unit/ IS tracked
+!/tests/unit/
+
+# Session docs & personal notes (root level)
+SESSION-*.md
+SESSION_SUMMARY_*.md
+PHASE_*_COMPLETE.md
+NOTES.md
+TODO*.md
+SCRATCH*.md
+santiago_test.md
+starthere.md
+project-state.json
+file_tree.txt
+
+# Session/personal docs under docs/
+docs/sessions/
+docs/retrospectives/
+docs/SESSION_SUMMARY_*.md
+docs/RESTRUCTURING_COMPLETE.md
+docs/SETUP_COMPLETE.md
+docs/claude-code-handoff.md
+docs/character-roleplay-system-progress.md
+
+# Internal dev scaffolding (not public)
+.claude/
+AGENTS.md
+docs/decisions/
+docs/rogue-integration/
+docs/n8n_integration_plan.md
+docs/cost-analysis/
+docs/model-testing/
+docs/implementation/
+docs/IMPLEMENTATION_GUIDE.md
+docs/REQUIREMENTS.md
+docs/INDEX.md
+docs/README.md
+n8n/
+src/Agents/
+skills/_index.md
+
+# Cruft
+tmpclaude-*-cwd
+tmpclaude-*-cwd/
+agent_utilities
+agent_utilities/
+=0.40.0
+.DS_Store
+*.log

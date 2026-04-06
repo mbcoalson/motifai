@@ -1,0 +1,51 @@
+from pathlib import Path
+
+from setuptools import find_packages, setup
+
+# Read the project’s README for the long description
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
+
+setup(
+    name="WaterRisingProject",
+    version="0.1.0",
+    description="A multi‑agent writing assistant with FAISS based retrieval.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
+    include_package_data=True,
+    python_requires=">=3.10",
+    install_requires=[
+        "annotated-types==0.7.0",
+        "anyio==4.7.0",
+        "certifi==2024.8.30",
+        "click==8.1.8",
+        "colorama==0.4.6",
+        "distro==1.9.0",
+        "faiss-cpu==1.9.0.post1",
+        "h11==0.14.0",
+        "httpcore==1.0.7",
+        "httpx==0.28.1",
+        "idna==3.10",
+        "jiter==0.8.2",
+        "joblib==1.4.2",
+        "nltk==3.9.1",
+        "numpy==2.2.1",
+        "openai==1.59.3",
+        "packaging==24.2",
+        "pydantic==2.10.3",
+        "pydantic_core==2.27.1",
+        "python-dotenv==1.0.1",
+        "PyYAML==6.0.2",
+        "regex==2024.11.6",
+        "sniffio==1.3.1",
+        "tqdm==4.67.1",
+        "typing_extensions==4.12.2",
+    ],
+    entry_points={
+        "console_scripts": [
+            "writing-coach=Agents.writing_coach:chat_with_nary",
+        ]
+    },
+)

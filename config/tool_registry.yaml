@@ -1,0 +1,387 @@
+# Tool Registry
+# 
+# This file tells Nary what tools are available and how to use them.
+# Nary should ALWAYS check this registry before attempting a task.
+# If a tool exists for the job, use it. Don't reinvent the wheel.
+#
+# Location: config/tool_registry.yaml
+# Updated: 2024-12-27
+
+# -----------------------------------------------------------------------------
+# Path Configuration
+# -----------------------------------------------------------------------------
+paths:
+  chapters: "/path/to/your/story/chapters"
+  characters: "/path/to/your/story/Characters"
+  skills: "./skills"
+  scripts: "./scripts"
+
+# -----------------------------------------------------------------------------
+# Available Tools
+# -----------------------------------------------------------------------------
+tools:
+
+  # ---------------------------------------------------------------------------
+  # Validation Tools
+  # ---------------------------------------------------------------------------
+  
+  validate_chapters:
+    script: scripts/validate_chapters.py
+    description: |
+      Check chapter frontmatter against the schema. Reports missing fields,
+      type errors, and warnings. Use this FIRST when working with chapters
+      to ensure data integrity.
+    
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+        example: "/path/to/your/story/chapters/Act 1"
+      --character:
+        required: false
+        description: "Filter to specific POV character"
+        example: "Santiago Esposito"
+      --status:
+        required: false
+        description: "Filter to specific status"
+        choices: ["outline", "draft", "revised", "final"]
+      --valid-only:
+        required: false
+        description: "Only show valid chapters"
+        type: flag
+      --invalid-only:
+        required: false
+        description: "Only show invalid chapters"
+        type: flag
+      --summary-only:
+        required: false
+        description: "Only output summary stats, not per-file details"
+        type: flag
+    
+    returns:
+      success: boolean
+      summary:
+        total_files: int
+        valid: int
+        invalid: int
+        groundable: int
+        by_pov_character: object
+      chapters: "list of validation results (unless --summary-only)"
+    
+    exit_codes:
+      0: "All chapters valid"
+      1: "Some chapters have validation errors"
+      2: "Runtime error (bad path, etc.)"
+    
+    examples:
+      - description: "Check all Act 1 chapters"
+        command: 'python scripts/validate_chapters.py --chapters-dir "/path/to/your/story/chapters/Act 1"'
+      
+      - description: "Find invalid chapters only"
+        command: 'python scripts/validate_chapters.py --chapters-dir "..." --invalid-only'
+      
+      - description: "Quick summary"
+        command: 'python scripts/validate_chapters.py --chapters-dir "..." --summary-only'
+
+  # ---------------------------------------------------------------------------
+  # Query Tools
+  # ---------------------------------------------------------------------------
+  
+  query_chapters:
+    script: scripts/query_chapters.py
+    description: |
+      Find chapters by metadata WITHOUT loading full content. Returns 
+      frontmatter only. Use this for discovery before calling content tools.
+      This is the PRIMARY tool for chapter lookup - prefer it over reading files.
+    
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+      --pov:
+        required: false
+        description: "Filter by POV character"
+        example: "Santiago Esposito"
+      --status:
+        required: false
+        description: "Filter by status"
+        choices: ["outline", "draft", "revised", "final"]
+      --act:
+        required: false
+        description: "Filter by act"
+        choices: ["1", "2", "2a", "2b", "3"]
+      --chapter:
+        required: false
+        description: "Filter by chapter number"
+        type: int
+      --groundable-only:
+        required: false
+        description: "Only return chapters usable for character grounding"
+        type: flag
+    
+    returns:
+      success: boolean
+      summary:
+        total: int
+        filters_applied: object
+      chapters: "list of {file, path, frontmatter} objects"
+    
+    examples:
+      - description: "Find all Santiago chapters"
+        command: 'python scripts/query_chapters.py --chapters-dir "..." --pov "Santiago Esposito"'
+      
+      - description: "Find all drafts in Act 1"
+        command: 'python scripts/query_chapters.py --chapters-dir ".../Act 1" --status draft'
+
+  # ---------------------------------------------------------------------------
+  # Content Tools (Use sparingly - returns full prose)
+  # ---------------------------------------------------------------------------
+  
+  get_chapter_content:
+    script: scripts/get_chapter_content.py
+    description: |
+      Retrieve full chapter text including frontmatter. Use ONLY when you
+      need the actual prose - prefer query_chapters for metadata lookups.
+    
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+      --chapter:
+        required: false
+        description: "Chapter number to retrieve"
+        type: int
+      --file:
+        required: false
+        description: "Or specify filename directly"
+    
+    returns:
+      success: boolean
+      data:
+        file: string
+        path: string
+        frontmatter: object
+        content: string
+        word_count: int
+    
+    notes: "One of --chapter or --file is required."
+    status: planned
+
+  # ---------------------------------------------------------------------------
+  # Character Tools
+  # ---------------------------------------------------------------------------
+  
+  get_character_state:
+    script: scripts/get_character_state.py
+    description: |
+      Build a character's knowledge and emotional state at a specific story point.
+      Reads all POV chapters up to the specified chapter and summarizes what
+      the character has experienced. Essential for character conversation grounding.
+
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+        example: "/path/to/your/story/chapters/Act 1"
+      --character:
+        required: true
+        description: "Character name (canonical)"
+        example: "Santiago Esposito"
+      --as-of-chapter:
+        required: false
+        description: "Ground character at this chapter number (default: latest)"
+        type: int
+      --as-of-date:
+        required: false
+        description: "Ground character at this story date (YYYY-MM-DD)"
+        type: string
+
+    returns:
+      success: boolean
+      data:
+        character: string
+        grounded_at: "chapter number or date, or 'latest'"
+        total_chapters_experienced: int
+        chapters_experienced: "list of chapter summary objects with metadata and content_preview"
+        state_summary: "synthesized character state (narrative summary)"
+
+    exit_codes:
+      0: "Success"
+      1: "Character not found in canonical list"
+      2: "Runtime error (bad path, invalid date, etc.)"
+
+    examples:
+      - description: "Get Santiago's current state (all chapters)"
+        command: 'python scripts/get_character_state.py --chapters-dir "/path/to/your/story/chapters/Act 1" --character "Santiago Esposito"'
+
+      - description: "Get Anais's state as of chapter 3"
+        command: 'python scripts/get_character_state.py --chapters-dir "..." --character "Anais Non" --as-of-chapter 3'
+
+      - description: "Get Joseph's state as of specific date"
+        command: 'python scripts/get_character_state.py --chapters-dir "..." --character "Joseph Krutz" --as-of-date 2042-09-04'
+
+    notes: |
+      - Only includes groundable chapters (draft/revised/final, not outline)
+      - Chapters are sorted chronologically by chapter_number then story_date
+      - Character name must match canonical character list (case-insensitive)
+      - Returns content_preview (first 500 chars) for each chapter
+      - State summary is currently a simple structured narrative; could be enhanced
+        with LLM synthesis in the future
+
+    status: implemented
+
+  # ---------------------------------------------------------------------------
+  # Mutation Tools (Require --apply to write)
+  # ---------------------------------------------------------------------------
+  
+  update_frontmatter:
+    script: scripts/update_frontmatter.py
+    description: |
+      Modify chapter frontmatter fields. DRY-RUN by default - shows what would
+      change without writing. Requires --apply flag to actually write changes.
+    
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+      --file:
+        required: true
+        description: "Chapter filename to update"
+      --set:
+        required: true
+        description: "Field=value pairs to set"
+        example: "status=draft pov_character='Santiago Esposito'"
+      --apply:
+        required: false
+        description: "Actually write changes (default: dry-run only)"
+        type: flag
+    
+    returns:
+      success: boolean
+      dry_run: boolean
+      changes:
+        - field: string
+          before: any
+          after: any
+      recommendation: "Nary's assessment of whether --apply is appropriate"
+    
+    notes: |
+      ALWAYS run without --apply first to preview changes.
+      Nary should explain the changes and ask user before applying.
+    
+    status: planned
+
+  migrate_chapters:
+    script: scripts/migrate_chapters.py
+    description: |
+      Batch update frontmatter across multiple chapters. Automatically infers
+      missing required fields from filenames, directory paths, and existing data.
+      Calculates accurate word counts from narrative content.
+      DRY-RUN by default - shows proposed changes without writing.
+
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+        example: "/path/to/your/story/chapters/Act 1"
+      --apply:
+        required: false
+        description: "Actually write changes (default: dry-run only)"
+        type: flag
+
+    returns:
+      success: boolean
+      dry_run: boolean
+      summary:
+        total_files: int
+        files_needing_changes: int
+        files_unchanged: int
+        files_written: "int (only if --apply used)"
+        write_errors: "int (only if --apply used)"
+      changes: "list of per-file change objects with before/after values"
+
+    inference_capabilities:
+      pov_character: "Inferred from filename/title using canonical character names"
+      status: "Inferred from filename (DRAFT, REVISED, FINAL, OUTLINE)"
+      act: "Inferred from directory path (e.g., 'Act 1' -> '1')"
+      chapter_number: "Inferred from filename (e.g., 'Chapter 3' -> 3)"
+      story_date: "Migrated from existing 'Date' or 'date' fields"
+      word_count: "Accurately calculated from narrative content (excludes frontmatter, markdown formatting)"
+      characters: "Cleaned Obsidian link syntax [[Name]] -> Name"
+
+    examples:
+      - description: "Preview all changes for Act 1"
+        command: 'python scripts/migrate_chapters.py --chapters-dir "/path/to/your/story/chapters/Act 1"'
+
+      - description: "Apply changes after review"
+        command: 'python scripts/migrate_chapters.py --chapters-dir "..." --apply'
+
+    status: implemented
+
+  update_word_counts:
+    script: scripts/update_word_counts.py
+    description: |
+      Update word_count fields in chapter frontmatter with accurate counts.
+      Counts words in narrative content only (excludes frontmatter, markdown
+      formatting, HTML comments, code blocks). DRY-RUN by default.
+
+    args:
+      --chapters-dir:
+        required: true
+        description: "Path to chapters directory"
+        example: "/path/to/your/story/chapters/Act 1"
+      --apply:
+        required: false
+        description: "Actually write changes (default: dry-run only)"
+        type: flag
+
+    returns:
+      success: boolean
+      dry_run: boolean
+      summary:
+        total_files: int
+        files_needing_updates: int
+        files_unchanged: int
+        files_written: "int (only if --apply used)"
+        write_errors: "int (only if --apply used)"
+      updates: "list of per-file word count changes with before/after/difference"
+
+    counting_method: |
+      - Excludes YAML frontmatter
+      - Removes markdown formatting (headers, bold, italic, links)
+      - Removes HTML comments
+      - Removes code blocks and inline code
+      - Counts actual narrative words
+
+    examples:
+      - description: "Preview word count updates for Act 1"
+        command: 'python scripts/update_word_counts.py --chapters-dir "/path/to/your/story/chapters/Act 1"'
+
+      - description: "Apply accurate word counts after review"
+        command: 'python scripts/update_word_counts.py --chapters-dir "..." --apply'
+
+    status: implemented
+
+# -----------------------------------------------------------------------------
+# Tool Selection Guidelines for Nary
+# -----------------------------------------------------------------------------
+guidelines:
+  
+  general:
+    - "ALWAYS check if a tool exists before attempting manual file operations"
+    - "Prefer query tools over content tools - get metadata first, content only if needed"
+    - "For mutations, ALWAYS run dry-run first and explain changes to user"
+    - "If a tool returns errors, report them clearly - don't guess at fixes"
+  
+  chapter_workflow:
+    - "validate_chapters first to check data integrity"
+    - "query_chapters to find relevant files by metadata"
+    - "get_chapter_content only when prose is needed"
+    - "get_character_state before character conversations"
+  
+  mutation_workflow:
+    - "Run mutation tool WITHOUT --apply"
+    - "Show user the proposed changes"
+    - "Explain your recommendation (apply or not)"
+    - "Ask user to confirm before running with --apply"
+    - "Report results after applying"

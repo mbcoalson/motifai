@@ -1,0 +1,14 @@
+# Example Character - Minimal Profile
+# Demonstrates that the system works with just basic information
+
+name: Detective Murphy
+role: protagonist
+basic_traits:
+  - gruff
+  - cynical
+  - drinks too much
+  - good heart beneath rough exterior
+
+# That's it! The system will work with just this minimal data.
+# Validation will be more basic, but still useful.
+# Writers can add more detail over time as they develop the character.

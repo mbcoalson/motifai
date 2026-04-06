@@ -1,0 +1,92 @@
+Metadata-Version: 2.4
+Name: waterrisingproject
+Version: 0.1.0
+Summary: Story-agnostic writing assistant with semantic retrieval and narrative continuity tracking
+Author-email: Mat Coalson <matt.coalson@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/mbcoalson/WaterRisingProject
+Project-URL: Repository, https://github.com/mbcoalson/WaterRisingProject
+Project-URL: Issues, https://github.com/mbcoalson/WaterRisingProject/issues
+Keywords: writing,ai,narrative,continuity,semantic-search
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Text Processing
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: PyYAML>=6.0.2
+Requires-Dist: click>=8.1.8
+Requires-Dist: tqdm>=4.67.1
+Requires-Dist: numpy>=1.26.4
+Requires-Dist: faiss-cpu>=1.9.0
+Requires-Dist: nltk>=3.9.1
+Requires-Dist: joblib>=1.4.2
+Requires-Dist: openai>=1.59.3
+Requires-Dist: langchain>=0.3.7
+Requires-Dist: langchain-openai>=0.2.9
+Requires-Dist: langchain-community>=0.3.0
+Requires-Dist: pydantic>=2.10.3
+Requires-Dist: typing_extensions>=4.12.2
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: requests>=2.32.5
+Requires-Dist: colorama>=0.4.6
+Requires-Dist: regex>=2024.11.6
+Requires-Dist: anthropic>=0.40.0
+Provides-Extra: dev
+Requires-Dist: pytest>=9.0; extra == "dev"
+Requires-Dist: pytest-cov>=7.0; extra == "dev"
+Requires-Dist: pytest-benchmark>=4.0.0; extra == "dev"
+Requires-Dist: black>=25.0; extra == "dev"
+Requires-Dist: ruff>=0.14.0; extra == "dev"
+Requires-Dist: mypy>=1.0; extra == "dev"
+Requires-Dist: mutmut>=2.4.0; extra == "dev"
+Requires-Dist: pre-commit>=3.0.0; extra == "dev"
+Requires-Dist: interrogate>=1.5.0; extra == "dev"
+Dynamic: requires-python
+
+# WaterRisingProject
+
+A multi-agent writing assistant that parses Obsidian notes, builds a hybrid semantic + tag retrieval layer, and coordinates LLM agents. The project uses FAISS for vector search and n8n for workflow automation.
+
+## Quick start
+
+1. Clone repository and create a Python 3.12 virtual environment:
+   ```bash
+   git clone https://github.com/yourname/WaterRisingProject.git
+   cd WaterRisingProject
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+2. Install dependencies:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   # optional dev tools
+   pip install -r requirements-dev.txt
+   ```
+3. Copy `.env.example` to `.env` and set `OPENAI_API_KEY`.
+
+## Common commands
+
+Task | Command
+-----|-------
+Run tests | `pytest -q`
+Coverage | `pytest --cov=src`
+Format/lint | `ruff check . && black --check .`
+Build index | `python tests/build_index.py`
+Chat with Nary | `python src/main.py`
+
+Scripts under `tests/` also demonstrate parsing Obsidian markdown and chunking text for embeddings.
+
+## n8n automation
+
+n8n can automate routine tasks such as running tests, rebuilding the FAISS index, and sending notifications. See [docs/n8n_integration_plan.md](docs/n8n_integration_plan.md) for a detailed workflow.
+
+## Project status
+
+- Parsing of chapter and character metadata implemented in example scripts.
+- Hybrid tag + semantic retrieval utilities implemented and tested.
+- Work continues on agent interactions and narrative feedback loops.
+
+For more details, see [docs/README.md](docs/README.md).

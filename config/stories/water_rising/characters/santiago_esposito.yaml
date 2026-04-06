@@ -1,0 +1,131 @@
+# Santiago Esposito - Water Rising Protagonist
+# Full-featured character profile demonstrating rich voice validation data
+
+name: Santiago Esposito
+role: protagonist
+basic_traits:
+  - practical
+  - blue-collar
+  - skeptical
+  - patient
+  - observant
+
+regional_voice: Naples, FL - working-class vernacular
+sensory_filter:
+  touch: 95
+  sound: 70
+  sight: 50
+  smell: 60
+  taste: 40
+
+# Character evolution through story arc
+arc_stages:
+  - stage_id: stage_1
+    name: Pre-transformation skeptic
+    description: Santiago before the water consciousness emerges, grounded in practical reality
+    vocabulary_register: informal/working-class
+    emotional_tone:
+      - pragmatic
+      - patient
+      - reserved
+      - matter-of-fact
+    speech_patterns:
+      - economy of words
+      - plain speech
+      - observation-focused
+      - avoids flowery language
+    typical_phrases:
+      - "Water does what water does"
+      - "Tide's pulling"
+      - "Nothing to fix"
+    forbidden_patterns:
+      - technical jargon
+      - academic language
+      - flowery metaphors
+      - overthinking/philosophizing
+    chapter_range:
+      start: 1
+      end: 5
+
+  - stage_id: stage_2
+    name: Awakening consciousness
+    description: Santiago begins sensing the water's consciousness, confusion and wonder emerging
+    vocabulary_register: informal but expanding
+    emotional_tone:
+      - confused
+      - curious
+      - conflicted
+      - tentative
+    speech_patterns:
+      - questioning observations
+      - hesitant acknowledgment
+      - practical mixed with mystical
+    typical_phrases:
+      - "That's not normal"
+      - "Water's acting strange"
+      - "Can't explain it"
+    forbidden_patterns:
+      - complete certainty
+      - full philosophical acceptance
+      - denial of experience
+    chapter_range:
+      start: 6
+      end: 10
+
+# Voice samples demonstrating Santiago's speech patterns
+voice_samples:
+  - text: "Tide's pulling harder than usual"
+    context: Observing ocean behavior from dock
+    arc_stage: stage_1
+    chapter: 2
+    tags:
+      - observation
+      - working_knowledge
+
+  - text: "Water does what water does. Nothing to fix here."
+    context: Responding to concern about unusual water behavior
+    arc_stage: stage_1
+    chapter: 3
+    tags:
+      - dialogue
+      - dismissive_pragmatism
+
+  - text: "The touch comes first - always. Cool pressure against skin, then the knowing."
+    context: Internal monologue about water sensing
+    arc_stage: stage_2
+    chapter: 7
+    tags:
+      - internal_monologue
+      - sensory_description
+
+  - text: "That's not right. Water doesn't... move like that."
+    context: Witnessing anomalous water behavior
+    arc_stage: stage_2
+    chapter: 6
+    tags:
+      - dialogue
+      - realization
+
+# Things Santiago absolutely wouldn't say or think
+contradictions:
+  - Would never use academic or technical jargon
+  - Avoids flowery or poetic language in stage 1
+  - Doesn't overthink or philosophize in early stages
+  - Won't deny physical sensations or observations
+
+# Signature phrases used across multiple stages
+signature_phrases:
+  - "Water does what water does"
+  - "Tide's pulling"
+  - "Nothing to fix"
+
+# Words/phrases Santiago would never use (especially in early stages)
+forbidden_vocabulary:
+  - algorithm
+  - paradigm
+  - methodology
+  - leverage (as a verb)
+  - synergy
+  - utilize (prefers "use")
+  - commenced (prefers "started")
+  - endeavor (prefers "try")

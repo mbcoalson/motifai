@@ -1,0 +1,57 @@
+# Tech Wizard - Medium Complexity Profile
+# Shows how to add some richness without going full-featured
+
+name: Alex Chen
+role: supporting
+basic_traits:
+  - brilliant programmer
+  - socially awkward
+  - speaks in tech metaphors
+  - kind but oblivious
+
+# Simple arc tracking by chapter
+arc_stages:
+  - stage_id: early_story
+    name: Isolated coder
+    vocabulary_register: technical/jargon-heavy
+    speech_patterns:
+      - speaks in code metaphors
+      - interrupts with technical corrections
+      - misses social cues
+    typical_phrases:
+      - "That's a feature, not a bug"
+      - "Let me refactor that"
+      - "Error 404: empathy not found"
+    chapter_range:
+      start: 1
+      end: 8
+
+  - stage_id: late_story
+    name: Connected human
+    vocabulary_register: technical but more accessible
+    speech_patterns:
+      - still uses tech metaphors but explains them
+      - listens before correcting
+      - uses humor intentionally
+    typical_phrases:
+      - "Let me debug that for you"
+      - "We're all running the same code, different versions"
+    chapter_range:
+      start: 9
+      end: 15
+
+# A few voice samples to establish voice
+voice_samples:
+  - text: "Your logic is full of memory leaks. Let me patch that."
+    context: Arguing with another character
+    arc_stage: early_story
+    tags:
+      - dialogue
+      - technical_metaphor
+
+  - text: "I used to think people were just badly written code. Turns out we're all debugging ourselves."
+    context: Moment of growth
+    arc_stage: late_story
+    tags:
+      - internal_monologue
+      - character_development

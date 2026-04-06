@@ -1,0 +1,233 @@
+{
+  "meta": {
+    "version": "2.0",
+    "last_updated": "2026-03-03",
+    "updated_by": "Claude (session 2026-03-03)",
+    "project_name": "WaterRising Voice Validation System"
+  },
+  "current_phase": {
+    "phase_number": 4,
+    "phase_name": "Phase 4: Orchestration Layer",
+    "status": "complete",
+    "completed_date": "2026-03-03",
+    "next_phase": "Phase 5: CLI or Reflect Integration",
+    "current_task": "None — phase complete. See next_steps for options."
+  },
+  "milestones": {
+    "completed": [
+      {
+        "date": "2026-01-11",
+        "milestone": "Documentation restructuring"
+      },
+      {
+        "date": "2026-01-13",
+        "milestone": "Phase 1 design complete — CharacterProfile, ArcStage, ValidationResult models designed"
+      },
+      {
+        "date": "2026-01-13",
+        "milestone": "Phase 1 implementation — core domain models, YAML loading, 29 tests"
+      },
+      {
+        "date": "2026-01-13",
+        "milestone": "Phase 2 — LLM adapters (ClaudeAdapter, OllamaAdapter, LLMFactory), 55 tests"
+      },
+      {
+        "date": "2026-03-03",
+        "milestone": "Phase 3+4 — DeterministicValidator + ValidationService orchestrator",
+        "description": "Deterministic pre-layer (forbidden vocab, arc stage, signature phrases) + orchestrator that primes the LLM with deterministic findings via pre_context. 114 tests passing.",
+        "files_created": [
+          "src/domain/services/deterministic_validator.py",
+          "src/domain/services/validation_service.py",
+          "src/domain/services/__init__.py",
+          "tests/unit/domain/services/test_deterministic_validator.py",
+          "tests/unit/domain/services/test_validation_service.py",
+          "scripts/demo_validate.py",
+          ".claude/agents/deterministic-validator-implementer.md",
+          ".claude/agents/prompt-enricher-implementer.md",
+          ".claude/agents/validation-service-implementer.md",
+          ".claude/agents/test-writer.md",
+          ".claude/agents/demo-script-writer.md"
+        ],
+        "files_modified": [
+          "src/ports/llm_adapter.py",
+          "src/adapters/llm/claude_adapter.py",
+          "src/adapters/llm/ollama_adapter.py"
+        ]
+      }
+    ]
+  },
+  "implementation_status": {
+    "domain_models": {
+      "status": "complete",
+      "tests": 29,
+      "files": [
+        "src/domain/models/character_profile.py",
+        "src/domain/models/arc_stage.py",
+        "src/domain/models/validation_result.py"
+      ]
+    },
+    "llm_adapters": {
+      "status": "complete",
+      "tests": 55,
+      "files": [
+        "src/adapters/llm/claude_adapter.py",
+        "src/adapters/llm/ollama_adapter.py",
+        "src/adapters/llm/llm_factory.py",
+        "src/ports/llm_adapter.py"
+      ],
+      "notes": "pre_context parameter added to validate_voice() this session to support deterministic injection"
+    },
+    "deterministic_validator": {
+      "status": "complete",
+      "tests": 18,
+      "file": "src/domain/services/deterministic_validator.py",
+      "capabilities": [
+        "Forbidden vocab: whole-word, case-insensitive regex match",
+        "Arc stage lookup: by chapter number or in-story date",
+        "Signature phrase detection: case-insensitive substring match",
+        "to_context_injection(): formats findings for LLM prompt"
+      ]
+    },
+    "validation_service": {
+      "status": "complete",
+      "tests": 12,
+      "file": "src/domain/services/validation_service.py",
+      "flow": "DeterministicValidator -> pre_context injection -> LLM -> merge flags -> recompute is_valid"
+    },
+    "demo_script": {
+      "status": "complete",
+      "file": "scripts/demo_validate.py",
+      "usage": ".venv/Scripts/python.exe scripts/demo_validate.py [--chapter N] [--excerpt TEXT] [--no-llm]",
+      "notes": "Unicode-safe (UTF-8 wrapper). --no-llm works without API key."
+    },
+    "cli_interface": {
+      "status": "not_started",
+      "notes": "Future phase. Would accept .md file paths and run per-paragraph validation."
+    },
+    "reflect_integration": {
+      "status": "not_started",
+      "notes": "Phase 5. Auto-learning from writer corrections. Deferred until CLI is ready."
+    }
+  },
+  "test_summary": {
+    "last_run": "2026-03-03",
+    "total": 114,
+    "passed": 114,
+    "failed": 0,
+    "breakdown": {
+      "test_character_profile.py": 29,
+      "test_llm_factory.py": 22,
+      "test_deterministic_validator.py": 18,
+      "test_claude_adapter.py": 17,
+      "test_ollama_adapter.py": 16,
+      "test_validation_service.py": 12
+    },
+    "run_command": ".venv/Scripts/python.exe -m pytest tests/unit/ -v"
+  },
+  "human_testability": {
+    "no_api_key_needed": {
+      "command": ".venv/Scripts/python.exe scripts/demo_validate.py --no-llm",
+      "what_it_shows": "Deterministic layer: forbidden vocab flags, arc stage, signature phrases"
+    },
+    "with_api_key": {
+      "command": ".venv/Scripts/python.exe scripts/demo_validate.py --chapter 3 --excerpt \"Your text here\"",
+      "requires": "ANTHROPIC_API_KEY in .env or environment"
+    },
+    "not_yet_testable": [
+      "Validation of actual .md chapter files (no file-based CLI yet)",
+      "Ollama path end-to-end (adapters done, no demo integration)",
+      "Reflect/auto-learning workflow"
+    ]
+  },
+  "character_profiles": {
+    "complete": [
+      {
+        "character": "Santiago Esposito",
+        "file": "config/stories/water_rising/characters/santiago_esposito.yaml",
+        "arc_stages": 2,
+        "forbidden_vocab_count": 8,
+        "signature_phrases_count": 4
+      }
+    ],
+    "missing_but_useful": [
+      "Anais Non (protagonist — needed for Ch1 partnership revision work)",
+      "Joseph Harrington (antagonist — needed for Ch7 reframe work)"
+    ]
+  },
+  "decisions": {
+    "pre_context_vs_context": {
+      "decision": "scene_context -> context=, deterministic findings -> pre_context=",
+      "rationale": "Keeps concerns separate. LLM prompt has a dedicated 'Pre-Computed Rule Violations' section with 'Do not re-flag' instruction. Tested in ValidationService tests.",
+      "date": "2026-03-03",
+      "status": "finalized"
+    },
+    "deduplication_rule": {
+      "decision": "When both deterministic and LLM flag same word, keep LLM entry (richer suggestion)",
+      "rationale": "LLM provides better context/suggestions. Deterministic entry is dropped.",
+      "date": "2026-03-03",
+      "status": "finalized"
+    },
+    "forbidden_patterns_deferred": {
+      "decision": "Readability scoring and POS tagging explicitly excluded from MVP",
+      "rationale": "Needs incremental testing to prove effectiveness. Too risky to add before validation.",
+      "date": "2026-03-03",
+      "status": "finalized"
+    }
+  },
+  "housekeeping": {
+    "tmpclaude_dirs": {
+      "note": "19 tmpclaude-* directories in project root are leftover sub-agent worktree artifacts",
+      "action": "Safe to delete: rm -rf tmpclaude-*",
+      "risk": "None — these are empty or contain only temp outputs"
+    }
+  },
+  "next_steps": [
+    {
+      "id": "A",
+      "priority": "high",
+      "action": "Run demo against actual Water Rising excerpts",
+      "command": ".venv/Scripts/python.exe scripts/demo_validate.py --chapter 7 --excerpt \"paste text here\"",
+      "why": "First real-world test of the full pipeline. Will reveal if arc stage detection, forbidden vocab, and LLM layer are calibrated correctly."
+    },
+    {
+      "id": "B",
+      "priority": "high",
+      "action": "Build chapter file CLI",
+      "description": "Accept a .md file + character name, run ValidationService per paragraph or scene. Unlocks actual use as a writing tool.",
+      "files_to_create": ["scripts/validate_chapter.py or src/cli/"]
+    },
+    {
+      "id": "C",
+      "priority": "medium",
+      "action": "Add Anais Non YAML profile",
+      "description": "Needed for Ch1 partnership revision work (see CLAUDE.md open items). Santiago is the only full profile currently.",
+      "files_to_create": ["config/stories/water_rising/characters/anais_non.yaml"]
+    },
+    {
+      "id": "D",
+      "priority": "low",
+      "action": "Verify Ollama end-to-end",
+      "description": "All adapters exist, but Ollama path has not been exercised in the demo."
+    },
+    {
+      "id": "E",
+      "priority": "low",
+      "action": "Clean up tmpclaude-* directories",
+      "command": "cd WaterRisingProject && rm -rf tmpclaude-*"
+    }
+  ],
+  "ai_assistant_instructions": {
+    "on_session_start": [
+      "Read this file (project-state.json) to understand current state",
+      "Read SESSION-2026-03-03.md for detailed context on the last session",
+      "114 tests pass — run .venv/Scripts/python.exe -m pytest tests/unit/ -q to verify before making changes",
+      "demo script works: .venv/Scripts/python.exe scripts/demo_validate.py --no-llm"
+    ],
+    "architecture_notes": [
+      "Hexagonal: ports/ defines abstract interfaces, adapters/ has implementations",
+      "ValidationService is the main entry point for callers — takes profile + excerpt, returns ValidationResult",
+      "DeterministicValidator is always called first, its output goes into pre_context= (NOT context=)",
+      "pre_context is injected under '## Pre-Computed Rule Violations' in the LLM prompt"
+    ]
+  }
+}

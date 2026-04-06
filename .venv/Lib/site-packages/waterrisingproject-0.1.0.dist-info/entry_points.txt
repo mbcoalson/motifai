@@ -1,0 +1,2 @@
+[console_scripts]
+writing-coach = Agents.writing_coach:chat_with_nary
